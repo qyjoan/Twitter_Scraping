@@ -5,15 +5,14 @@ import datetime
 import urllib
 import signal
 import json
-import partitions as par
 
 class TweetSerializer:
    out = None
    first = True
    count = 0
-   def start(self,d):
+   def start(self):
       self.count += 1
-      fname = "/Users/joanqiu/MIDS/W205/week2/out/"+"tweets-"+d+".json"
+      fname = "/Users/joanqiu/MIDS/W205/week2/out/"+"tweets-"+str(self.count)+".json"
       self.out = open(fname,"w")
       self.out.write("[\n")
       self.first = True
@@ -60,34 +59,19 @@ q = urllib.quote_plus(sys.argv[1])  # URL encoded query
 
 # allowing a max number of tweets per file #
 
-#tweet_limit = int(sys.argv[2])
-#tweet_cnt = 0
-#ts = TweetSerializer()
-#ts.start()
-#for tweet in tweepy.Cursor(api.search,q=q).items(100):
-#   if tweet_cnt < tweet_limit:
-#      ts.write(tweet)
-#      tweet_cnt += 1
-#   else:
-#      ts.end()
-#      ts.start()
-#      ts.write(tweet)
-#      tweet_cnt = 1
-#ts.end()
+tweet_limit = int(sys.argv[2])
+tweet_cnt = 0
+ts = TweetSerializer()
+ts.start()
+for tweet in tweepy.Cursor(api.search,q=q).items(100):
+   if tweet_cnt < tweet_limit:
+      ts.write(tweet)
+      tweet_cnt += 1
+   else:
+      ts.end()
+      ts.start()
+      ts.write(tweet)
+      tweet_cnt = 1
+ts.end()
    # FYI: JSON is in tweet._json
 
-# partition data on facet
-
-start_dt = sys.argv[2]
-end_dt = sys.argv[3]
-start = datetime.datetime.strptime(start_dt, par.xsdDateFormat)
-end = datetime.datetime.strptime(end_dt, par.xsdDateFormat)
-
-for strd in par.date_partition(start, end):
-   ts = TweetSerializer()
-   start_dt = str(strd).split(' ')[0]
-   end_dt = str(strd + datetime.timedelta(days=1)).split(' ')[0]
-   ts.start(start_dt)
-   for tweet in tweepy.Cursor(api.search, q = q, since = start_dt, until = end_dt).items(10):
-      ts.write(tweet)
-   ts.end()
