@@ -58,24 +58,6 @@ q = urllib.quote_plus(sys.argv[1])  # URL encoded query
 #   until: {date}
 # Just add them to the 'q' variable: q+" since: 2014-01-01 until: 2014-01-02"
 
-# allowing a max number of tweets per file #
-
-#tweet_limit = int(sys.argv[2])
-#tweet_cnt = 0
-#ts = TweetSerializer()
-#ts.start()
-#for tweet in tweepy.Cursor(api.search,q=q).items(100):
-#   if tweet_cnt < tweet_limit:
-#      ts.write(tweet)
-#      tweet_cnt += 1
-#   else:
-#      ts.end()
-#      ts.start()
-#      ts.write(tweet)
-#      tweet_cnt = 1
-#ts.end()
-   # FYI: JSON is in tweet._json
-
 # partition data on facet
 
 start_dt = sys.argv[2]
