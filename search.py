@@ -62,14 +62,16 @@ q = urllib.quote_plus(sys.argv[1])  # URL encoded query
 
 start_dt = sys.argv[2]
 end_dt = sys.argv[3]
+
 start = datetime.datetime.strptime(start_dt, par.xsdDateFormat)
 end = datetime.datetime.strptime(end_dt, par.xsdDateFormat)
 
 for strd in par.date_partition(start, end):
    ts = TweetSerializer()
    start_dt = str(strd).split(' ')[0]
-   end_dt = str(strd + datetime.timedelta(days=1)).split(' ')[0]
+   end_dt = (strd + datetime.timedelta(days=1)).strftime(par.xsdDateFormat)
    ts.start(start_dt)
-   for tweet in tweepy.Cursor(api.search, q = q, since = start_dt, until = end_dt).items(10):
+   print start_dt, end_dt
+   for tweet in tweepy.Cursor(api.search, q = q, since = start_dt, until="{0}".format(end_dt)).items(100):
       ts.write(tweet)
    ts.end()
